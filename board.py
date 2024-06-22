@@ -9,6 +9,7 @@ class Wordle:
         self.board = DEFAULT_WORDLE_BOARD
         self.guess_count = 0
         self.word_to_guess = random_word
+        self.guessed_words = []
         self.word_dictionary = enchant.Dict("en_US")
 
     def display_board(self):
@@ -41,19 +42,25 @@ class Wordle:
             flag = False
 
         # if the word is longer then 5 letters
-        if len(word) > 5:
+        if len(word) != 5:
             error_msg = "WORD COULD NOT BE LONGER THEN 5 LETTERS! TRY AGAIN!"
             flag = False
 
         if not self.word_dictionary.check(word):
             error_msg = "NOT A REAL WORD! TRY AGAIN!"
             flag = False
+
+        if word in self.guessed_words:
+            error_msg = "CAN'T GUESS THE SAME WORD TWICE! TRY AGAIN!"
+            flag = False
+
         colored_error = TextStyle.color_letter(error_msg, 'red', is_bold=True)
         print(colored_error)
         return flag
 
     def begin_round(self, word_guess):
         is_valid_word = self.validate_word(word_guess)
+        self.guessed_words.append(word_guess)
         if is_valid_word:
             self.append_new_word(word_guess)
             self.display_board()
